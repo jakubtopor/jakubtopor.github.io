@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dziennik Wspinaczkowy | Jakub Topór</title>
+    <style>
+        /* Styl inspirowany minimalizmem Haxley */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #222;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Nagłówek: Zdjęcie po lewej, tekst po prawej */
+        header {
+            margin-bottom: 40px;
+        }
+
+        .header-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 50px; /* Małe zdjęcie */
+            height: 50px;
+            border-radius: 50%; /* Okrągłe */
+            object-fit: cover;
+            margin-right: 15px; /* Odstęp od tekstu */
+            border: none; /* Brak ramki */
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Lista postów */
+        h2 {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: #999;
+        }
+
+        .posts {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .posts li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .date {
+            font-family: monospace;
+            font-size: 14px;
+            color: #999;
+            margin-right: 15px;
+            min-width: 85px;
+        }
+
+        .posts a {
+            color: #222;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+        }
+
+        .posts a:hover {
+            border-bottom: 1px solid #222;
+        }
+
+        /* Stopka */
+        footer {
+            margin-top: 60px;
+            font-size: 13px;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        footer a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .date {
+                display: block;
+                margin-bottom: 2px;
+            }
+            .posts li {
+                display: block;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="header-profile">
+                <img src="img/awatar.jpeg" alt="Zdjęcie Jakub Topór" class="avatar">
+                <div class="header-text">
+                    <h1>Jakub Topór</h1>
+                    <p class="subtitle">wspinanie, vanlife, medycyna</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <h2>Posty</h2>
+            <ul class="posts">
+                <li>
+                    <span class="date">2026-03-20</span>
+                    <a href="post_1.html">Bukowa Góra bouldering</a>
+                </li>
+            </ul>
+        </main>
+
+        <footer>
+            <p>© 2026 made with ❤️ Jakub Topór, <a href="mailto:jakubtopor@proton.me">kontakt</a></p>
+        </footer>
+    </div>
+
+</body>
+</html>
