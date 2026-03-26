@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jakub Topór</title>
     <style>
-        /* Styl inspirowany minimalizmem Haxley */
+        /* Styl minimalizmu Haxley */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
@@ -21,10 +21,7 @@
             padding: 40px 20px;
         }
 
-        /* Nagłówek: Zdjęcie po lewej, tekst po prawej */
-        header {
-            margin-bottom: 40px;
-        }
+        header { margin-bottom: 20px; }
 
         .header-profile {
             display: flex;
@@ -32,12 +29,11 @@
         }
 
         .avatar {
-            width: 50px; /* Małe zdjęcie */
+            width: 50px;
             height: 50px;
-            border-radius: 50%; /* Okrągłe */
+            border-radius: 50%;
             object-fit: cover;
-            margin-right: 15px; /* Odstęp od tekstu */
-            border: none; /* Brak ramki */
+            margin-right: 15px;
         }
 
         .header-text h1 {
@@ -46,26 +42,53 @@
             font-weight: 700;
         }
 
-        .subtitle {
-            margin: 0;
-            font-size: 14px;
-            color: #666;
+        /* KARUZELA */
+        .slider-container {
+            width: 100%;
+            height: 350px;
+            margin: 30px 0 50px 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            background: #f0f0f0;
         }
 
-        /* Lista postów */
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            display: block;
+        }
+
+        .slide.active { opacity: 1; }
+
+        .slide img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-title {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 40px 20px 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        }
+
+        /* LISTA POSTÓW */
         h2 {
-            font-size: 16px;
+            font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 20px;
             color: #999;
         }
 
-        .posts {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        .posts { list-style: none; padding: 0; margin: 0; }
 
         .posts li {
             margin-bottom: 12px;
@@ -87,11 +110,8 @@
             border-bottom: 1px solid #eee;
         }
 
-        .posts a:hover {
-            border-bottom: 1px solid #222;
-        }
+        .posts a:hover { border-bottom: 1px solid #222; }
 
-        /* Stopka */
         footer {
             margin-top: 60px;
             font-size: 13px;
@@ -100,21 +120,12 @@
             padding-top: 20px;
         }
 
-        footer a {
-            color: #666;
-            text-decoration: none;
-        }
+        footer a { color: #666; text-decoration: none; }
 
-        /* Mobile */
         @media (max-width: 480px) {
-            .date {
-                display: block;
-                margin-bottom: 2px;
-            }
-            .posts li {
-                display: block;
-                margin-bottom: 15px;
-            }
+            .slider-container { height: 250px; }
+            .date { display: block; margin-bottom: 2px; }
+            .posts li { display: block; margin-bottom: 15px; }
         }
     </style>
 </head>
@@ -123,23 +134,27 @@
     <div class="container">
         <header>
             <div class="header-profile">
-                <img src="awatar.jpeg" alt="Zdjęcie Jakub Topór" class="avatar">
+                <img src="img/avatar.jpeg" alt="Zdjęcie Jakub Topór" class="avatar">
                 <div class="header-text">
                     <h1>Jakub Topór</h1>
                 </div>
             </div>
         </header>
 
+        <div id="hero-slider" class="slider-container"></div>
+
         <main>
             <h2>Posty</h2>
             <ul class="posts">
-                <li>
+                <li class="post-item">
                     <span class="date">2026-03-20</span>
-                    <a href="2025_03_20_bukowa_gora/2025_03_20_bukowa_gora.html">Bukowa Góra bouldering</a>
+                    <a href="posts/2026_03_20_bukowa_gora/2026_03_20_bukowa_gora.html" 
+                       data-img="posts/2026_03_20_bukowa_gora/bukowa_gora_1.jpeg">Bukowa Góra bouldering</a>
                 </li>
-                 <li>
-                    <span class="date">2025-08</span>
-                    <a href="gran_koscielcow/2025_08_gran_koscielcow.html">Grań Kościelców na żywca</a>
+                 <li class="post-item">
+                    <span class="date">2025-08-15</span>
+                    <a href="posts/2025_08_15_gran_koscielcow/2025_08_15_gran_koscielcow.html" 
+                       data-img="posts/2025_08_15_gran_koscielcow/gran_koscielcow_7.jpeg">Grań Kościelców na żywca</a>
                 </li>
             </ul>
         </main>
@@ -148,6 +163,48 @@
             <p>© 2026 made with ❤️ Jakub Topór, <a href="mailto:jakubtopor@proton.me">kontakt</a></p>
         </footer>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Pobieramy linki z listy postów
+            const postItems = Array.from(document.querySelectorAll('.post-item a'));
+            const slider = document.getElementById('hero-slider');
+
+            // Wybieramy losowe 3 posty
+            const shuffled = postItems.sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 3);
+
+            selected.forEach((post, index) => {
+                const link = post.getAttribute('href');
+                const title = post.innerText;
+                const img = post.getAttribute('data-img');
+
+                if (img) {
+                    const slide = document.createElement('a');
+                    slide.href = link;
+                    slide.className = index === 0 ? 'slide active' : 'slide';
+                    slide.innerHTML = `
+                        <img src="${img}" alt="${title}">
+                        <div class="slide-title">${title}</div>
+                    `;
+                    slider.appendChild(slide);
+                }
+            });
+
+            // Logika przesuwania slajdów
+            let current = 0;
+            const slides = document.querySelectorAll('.slide');
+            if (slides.length > 1) {
+                setInterval(() => {
+                    slides[current].classList.remove('active');
+                    current = (current + 1) % slides.length;
+                    slides[current].classList.add('active');
+                }, 5000);
+            } else if (slides.length === 0) {
+                slider.style.display = 'none';
+            }
+        });
+    </script>
 
 </body>
 </html>
