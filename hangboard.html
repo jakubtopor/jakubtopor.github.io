@@ -4,23 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hangboard Timer — Jakub Topór</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="img/avatar.jpeg">
+
 <style>
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-    color: #222;
-    background: #fff;
-    margin: 0;
-    padding: 0;
+    line-height: 1.6; color: #222; background: #fff; margin: 0; padding: 0;
   }
-
-  .container {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 40px 20px 80px;
-  }
-
-  /* ── Header ── */
+  .container { max-width: 700px; margin: 0 auto; padding: 40px 20px 80px; }
   header { margin-bottom: 40px; }
   .header-profile { display: flex; align-items: center; }
   .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px; }
@@ -30,169 +24,56 @@
   nav a { color: #666; text-decoration: none; border-bottom: 1px solid #eee; }
   nav a:hover { border-bottom-color: #222; color: #222; }
 
-  h2 {
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 20px;
-    color: #999;
-    font-weight: 400;
-  }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 20px; color: #999; font-weight: 400; }
+  .config { display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: #999; }
+  .input-row { display: flex; align-items: center; gap: 6px; }
+  .input-row button { background: none; border: 1px solid #eee; border-radius: 3px; color: #999; width: 26px; height: 26px; cursor: pointer; }
+  .input-row input { font-family: monospace; font-size: 18px; font-weight: 600; color: #222; border: none; width: 45px; text-align: center; }
 
-  /* ── Config grid ── */
-  .config {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .field label {
-    font-size: 12px;
-    color: #999;
-    letter-spacing: 0.5px;
-  }
-
-  .input-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .input-row button {
-    background: none;
-    border: 1px solid #eee;
-    border-radius: 3px;
-    color: #999;
-    font-size: 14px;
-    width: 26px;
-    height: 26px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: border-color 0.15s, color 0.15s;
-  }
-
-  .input-row button:hover { border-color: #222; color: #222; }
-
-  .input-row input {
-    font-family: monospace;
-    font-size: 18px;
-    font-weight: 600;
-    color: #222;
-    border: none;
-    outline: none;
-    width: 45px;
-    text-align: center;
-    -moz-appearance: textfield;
-  }
-
-  /* ── Timer display ── */
-  .timer-section {
-    border-top: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    padding: 32px 0;
-    margin-bottom: 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .phase-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    width: 100%;
-  }
-
+  .timer-section { border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 32px 0; margin-bottom: 28px; display: flex; flex-direction: column; gap: 8px; }
+  .phase-row { display: flex; align-items: baseline; justify-content: space-between; width: 100%; }
   #phaseLabel { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; }
   #phaseLabel.exercise { color: #c00; }
-  #phaseLabel.rest     { color: #2a7a2a; }
-  #phaseLabel.done     { color: #555; }
-
+  #phaseLabel.rest { color: #2a7a2a; }
   #repDisplay { font-family: monospace; font-size: 12px; color: #bbb; }
-
-  #timerDisplay {
-    font-family: monospace;
-    font-size: 96px;
-    font-weight: 700;
-    line-height: 1;
-    color: #eee;
-    letter-spacing: -4px;
-    margin: 4px 0;
-  }
-
+  
+  #timerDisplay { font-family: monospace; font-size: 96px; font-weight: 700; line-height: 1; color: #eee; letter-spacing: -4px; margin: 4px 0; }
   #timerDisplay.exercise { color: #c00; }
-  #timerDisplay.rest     { color: #2a7a2a; }
-  #timerDisplay.done     { color: #222; font-size: 48px; letter-spacing: 0; }
+  #timerDisplay.rest { color: #2a7a2a; }
+  #timerDisplay.done { color: #222; font-size: 38px; letter-spacing: 0; }
 
   .progress-track { width: 100%; height: 2px; background: #f0f0f0; }
   #progressBar { height: 100%; width: 0%; background: #eee; transition: background 0.35s; }
   #progressBar.exercise { background: #c00; }
-  #progressBar.rest     { background: #2a7a2a; }
+  #progressBar.rest { background: #2a7a2a; }
 
-  /* ── Controls ── */
   .controls { display: flex; gap: 12px; margin-bottom: 40px; align-items: center; }
-  #startBtn {
-    background: #222; border: none; border-radius: 3px; color: #fff;
-    font-family: inherit; font-size: 13px; padding: 9px 22px; cursor: pointer;
-  }
-  #resetBtn {
-    background: none; border: 1px solid #eee; border-radius: 3px; color: #999;
-    font-family: inherit; font-size: 13px; padding: 9px 18px; cursor: pointer;
-  }
-  #googleBtn {
-    margin-left: auto; display: flex; align-items: center; gap: 6px;
-    background: none; border: 1px solid #eee; border-radius: 3px; color: #666;
-    font-size: 12px; padding: 8px 14px; cursor: pointer;
-  }
-
-  /* ── Log ── */
-  .log-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+  #startBtn { background: #222; border: none; border-radius: 3px; color: #fff; padding: 9px 22px; cursor: pointer; font-size: 13px; }
+  #resetBtn { background: none; border: 1px solid #eee; border-radius: 3px; color: #999; padding: 9px 18px; cursor: pointer; font-size: 13px; }
+  #googleBtn { margin-left: auto; display: flex; align-items: center; gap: 6px; background: none; border: 1px solid #eee; border-radius: 3px; color: #666; font-size: 12px; padding: 8px 14px; cursor: pointer; }
+  
   #syncStatus { font-size: 12px; color: #bbb; }
   #syncStatus.ok { color: #2a7a2a; }
-  #syncStatus.err { color: #c00; }
   .log-list { list-style: none; padding: 0; margin: 0; }
   .log-item { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; font-size: 14px; }
   .log-dt { font-family: monospace; font-size: 13px; color: #999; min-width: 120px; }
-  .log-detail { color: #bbb; font-size: 12px; }
-  .log-weight { font-weight: 600; color: #444; }
-
-  /* ── Footer & Misc ── */
-  footer { margin-top: 60px; font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
-  #doneMsg { font-size: 13px; color: #2a7a2a; display: none; margin-top: 4px; }
-  #doneMsg.show { display: block; }
-  #toast {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px);
-    background: #222; color: #fff; border-radius: 3px; padding: 8px 16px;
-    font-size: 12px; transition: transform 0.25s; z-index: 999;
-  }
+  #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px); background: #222; color: #fff; border-radius: 3px; padding: 8px 16px; font-size: 12px; transition: transform 0.25s; z-index: 999; }
   #toast.show { transform: translateX(-50%) translateY(0); }
-
-  @media (max-width: 480px) { #timerDisplay { font-size: 64px; } .config { gap: 15px; } }
 </style>
 </head>
 <body>
 <div class="container">
-
   <header>
     <div class="header-profile">
-      <img src="../img/avatar.jpeg" alt="Avatar" class="avatar">
+      <img src="img/avatar.jpeg" alt="Avatar" class="avatar">
       <div class="header-text">
         <h1>Jakub Topór</h1>
         <p class="subtitle">hangboard timer</p>
       </div>
     </div>
-    <nav style="margin-top:10px;"><a href="../index.html">← powrót</a></nav>
+    <nav style="margin-top:10px;"><a href="index.html">← powrót</a></nav>
   </header>
 
   <section>
@@ -200,275 +81,223 @@
     <div class="config">
       <div class="field">
         <label>Ćwiczenie (s)</label>
-        <div class="input-row">
-          <button onclick="adj('exercise',-1)">−</button>
-          <input id="exerciseTime" type="number" value="10">
-          <button onclick="adj('exercise',1)">+</button>
-        </div>
+        <div class="input-row"><button onclick="adj('exercise',-1)">−</button><input id="exerciseTime" type="number" value="10"><button onclick="adj('exercise',1)">+</button></div>
       </div>
       <div class="field">
         <label>Odpoczynek (s)</label>
-        <div class="input-row">
-          <button onclick="adj('rest',-1)">−</button>
-          <input id="restTime" type="number" value="30">
-          <button onclick="adj('rest',1)">+</button>
-        </div>
+        <div class="input-row"><button onclick="adj('rest',-1)">−</button><input id="restTime" type="number" value="30"><button onclick="adj('rest',1)">+</button></div>
       </div>
       <div class="field">
         <label>Powtórzenia</label>
-        <div class="input-row">
-          <button onclick="adj('reps',-1)">−</button>
-          <input id="repsCount" type="number" value="6">
-          <button onclick="adj('reps',1)">+</button>
-        </div>
+        <div class="input-row"><button onclick="adj('reps',-1)">−</button><input id="repsCount" type="number" value="6"><button onclick="adj('reps',1)">+</button></div>
       </div>
       <div class="field">
         <label>Obciążenie (kg)</label>
-        <div class="input-row">
-          <button onclick="adj('weight',-1)">−</button>
-          <input id="weightValue" type="number" value="0">
-          <button onclick="adj('weight',1)">+</button>
-        </div>
+        <div class="input-row"><button onclick="adj('weight',-1)">−</button><input id="weightValue" type="number" value="0"><button onclick="adj('weight',1)">+</button></div>
       </div>
     </div>
   </section>
 
   <div class="timer-section">
-    <div class="phase-row">
-      <span id="phaseLabel">gotowy</span>
-      <span id="repDisplay"></span>
-    </div>
+    <div class="phase-row"><span id="phaseLabel">gotowy</span><span id="repDisplay"></span></div>
     <div id="timerDisplay">—</div>
     <div class="progress-track"><div id="progressBar"></div></div>
-    <div id="doneMsg"></div>
+    <div id="doneMsg" style="display:none; color:#2a7a2a; margin-top:10px; font-size:13px; font-weight:600;"></div>
   </div>
 
   <div class="controls">
     <button id="startBtn" onclick="toggleStart()">Start</button>
     <button id="resetBtn" onclick="resetTimer()">Reset</button>
     <button id="googleBtn" onclick="handleGoogleAuth()">
-      <svg width="13" height="13" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       <span id="googleBtnText">Zaloguj przez Google</span>
     </button>
   </div>
 
   <div class="log-section">
-    <div class="log-header">
-      <h2 style="margin:0">Historia sesji</h2>
-      <span id="syncStatus">zaloguj się, by zapisywać do Sheets</span>
+    <div class="log-header" style="display:flex; justify-content:space-between; align-items:baseline;">
+        <h2>Historia sesji</h2>
+        <span id="syncStatus">zaloguj się, by zapisywać</span>
     </div>
-    <ul class="log-list" id="logList"><li class="log-empty">brak sesji</li></ul>
+    <ul class="log-list" id="logList"></ul>
   </div>
-
-  <footer>
-    <p>© 2026 made with ❤️ Jakub Topór, <a href="mailto:jakubtopor@proton.me">kontakt</a></p>
-  </footer>
-
 </div>
-
 <div id="toast"></div>
 
 <script src="https://accounts.google.com/gsi/client" async></script>
-
 <script>
-// ═══════════════════════════════════════════════════
-// KONFIGURACJA
-// ═══════════════════════════════════════════════════
 const CONFIG = {
-  GOOGLE_CLIENT_ID: '273762301841-au9ct7mbb43m67p2oqp60lheuhkjsrn9.apps.googleusercontent.com', 
+  GOOGLE_CLIENT_ID: '273762301841-au9ct7mbb43m67p2oqp60lheuhkjsrn9.apps.googleusercontent.com', // PODMIEŃ TO!
   SHEET_NAME: 'Hangboard'
 };
 
-// ═══════════════════════════════════════════════════
-// STAN
-// ═══════════════════════════════════════════════════
 let timerInterval = null, currentPhase = null, currentTime = 0, currentRep = 0, totalReps = 0;
 let isRunning = false, isPaused = false, phaseDuration = 0, sessionStart = null, accessToken = null;
 let userSpreadsheetId = localStorage.getItem('hb_spreadsheet_id');
 let sessionLog = JSON.parse(localStorage.getItem('hb_log') || '[]');
+let audioCtx = null;
 
 const $ = id => document.getElementById(id);
 
+// --- AUDIO iOS SAFE ---
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const b = audioCtx.createBuffer(1, 1, 22050);
+  const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(audioCtx.destination); s.start(0);
+}
+
+function beep(freq = 880, duration = 0.2, volume = 0.3) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.frequency.value = freq; gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+
+// --- LOGOWANIE ---
+function saveToken(token, expires_in) {
+  localStorage.setItem('google_token', token);
+  localStorage.setItem('google_token_expiry', new Date().getTime() + (expires_in * 1000));
+  accessToken = token;
+}
+
+async function checkAutoLogin() {
+  const savedToken = localStorage.getItem('google_token');
+  const expiry = localStorage.getItem('google_token_expiry');
+  if (savedToken && expiry && new Date().getTime() < expiry) {
+    accessToken = savedToken;
+    try {
+      const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + accessToken } }).then(r => r.json());
+      if (info.email) {
+        $('googleBtnText').textContent = info.name || info.email;
+        $('syncStatus').textContent = '● połączono automatycznie';
+        $('syncStatus').className = 'ok';
+        return true;
+      }
+    } catch(e) { console.log("Token wygasł"); }
+  }
+  return false;
+}
+
+function handleGoogleAuth() {
+  if (accessToken) { localStorage.removeItem('google_token'); localStorage.removeItem('google_token_expiry'); location.reload(); return; }
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: CONFIG.GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
+    callback: async (resp) => {
+      if (resp.error) return;
+      saveToken(resp.access_token, resp.expires_in);
+      const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + accessToken } }).then(r => r.json());
+      $('googleBtnText').textContent = info.name || info.email;
+      if (!userSpreadsheetId) await createSheetForUser();
+      else { $('syncStatus').textContent = '● połączono'; $('syncStatus').className = 'ok'; await ensureSheetHeaders(); }
+    },
+  });
+  client.requestAccessToken();
+}
+
+// --- TIMER ---
 function adj(field, delta) {
   const map = { exercise: 'exerciseTime', rest: 'restTime', reps: 'repsCount', weight: 'weightValue' };
   const el = $(map[field]);
   el.value = (field === 'weight') ? Math.max(0, parseFloat(el.value) + delta) : Math.max(1, parseInt(el.value) + delta);
 }
 
-function toast(msg) {
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function beep(freq = 880, duration = 0.1, volume = 0.3, type = 'sine') {
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.type = type; osc.frequency.value = freq;
-  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.start(); osc.stop(audioCtx.currentTime + duration);
-}
-
 function toggleStart() {
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  if (!isRunning && !isPaused) startSession();
-  else if (isRunning) pauseTimer();
-  else resumeTimer();
-}
-
-function startSession() {
-  totalReps = parseInt($('repsCount').value); currentRep = 0;
-  isRunning = true; isPaused = false; sessionStart = new Date();
-  $('startBtn').textContent = 'Pauza'; $('doneMsg').className = '';
-  startExercise();
+  initAudio();
+  if (!isRunning && !isPaused) {
+    totalReps = parseInt($('repsCount').value); currentRep = 0;
+    isRunning = true; sessionStart = new Date(); $('startBtn').textContent = 'Pauza';
+    $('doneMsg').style.display = 'none'; startExercise();
+  } else if (isRunning) {
+    clearInterval(timerInterval); isRunning = false; isPaused = true; $('startBtn').textContent = 'Wznów';
+  } else {
+    isRunning = true; isPaused = false; $('startBtn').textContent = 'Pauza';
+    timerInterval = setInterval(timerTick, 1000);
+  }
 }
 
 function startExercise() {
   currentRep++; if (currentRep > totalReps) { finishSession(); return; }
   currentPhase = 'exercise'; phaseDuration = parseInt($('exerciseTime').value);
   currentTime = phaseDuration; setPhase('exercise', 'ćwiczenie');
-  beep(1046, 0.18, 0.5, 'square');
-  timerInterval = setInterval(() => {
-    currentTime--; updateDisplay();
-    if (currentTime <= 0) { clearInterval(timerInterval); beep(440, 0.2, 0.4, 'square'); startRest(); }
-  }, 1000);
+  beep(1046, 0.3); timerInterval = setInterval(timerTick, 1000);
 }
 
 function startRest() {
   if (currentRep >= totalReps) { finishSession(); return; }
   currentPhase = 'rest'; phaseDuration = parseInt($('restTime').value);
   currentTime = phaseDuration; setPhase('rest', 'odpoczynek');
-  timerInterval = setInterval(() => {
-    currentTime--; updateDisplay();
-    if (currentTime <= 3 && currentTime > 0) beep(660, 0.1, 0.2);
-    if (currentTime <= 0) { clearInterval(timerInterval); startExercise(); }
-  }, 1000);
+  timerInterval = setInterval(timerTick, 1000);
 }
 
-function pauseTimer() { clearInterval(timerInterval); isRunning = false; isPaused = true; $('startBtn').textContent = 'Wznów'; }
-function resumeTimer() { 
-  isRunning = true; isPaused = false; $('startBtn').textContent = 'Pauza'; 
-  timerInterval = setInterval(() => {
-    currentTime--; updateDisplay();
-    if (currentTime <= 0) {
-      clearInterval(timerInterval);
-      if (currentPhase === 'exercise') { beep(440, 0.2, 0.4, 'square'); startRest(); }
-      else startExercise();
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval); isRunning = false; isPaused = false;
-  $('startBtn').textContent = 'Start'; $('phaseLabel').textContent = 'gotowy';
-  $('timerDisplay').textContent = '—'; $('progressBar').style.width = '0%';
-}
-
-function setPhase(cls, label) {
-  $('phaseLabel').textContent = label; $('phaseLabel').className = cls;
-  $('repDisplay').textContent = `${currentRep} / ${totalReps}`; updateDisplay();
-}
-
-function updateDisplay() {
-  $('timerDisplay').textContent = currentTime;
-  $('timerDisplay').className = currentPhase || '';
-  $('progressBar').className = currentPhase || '';
-  $('progressBar').style.width = ((phaseDuration - currentTime) / phaseDuration * 100) + '%';
+function timerTick() {
+  currentTime--; updateDisplay();
+  if (currentTime <= 0) {
+    clearInterval(timerInterval);
+    if (currentPhase === 'exercise') { beep(440, 0.3); startRest(); }
+    else startExercise();
+  } else if (currentPhase === 'rest' && currentTime <= 3) beep(660, 0.1, 0.2);
 }
 
 function finishSession() {
-  clearInterval(timerInterval); isRunning = false;
   const now = new Date(); const dur = Math.round((now - sessionStart) / 1000);
-  const weight = parseFloat($('weightValue').value);
-  const session = {
-    date: now.toLocaleDateString('pl-PL'),
-    time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-    reps: totalReps, 
-    exTime: parseInt($('exerciseTime').value), 
-    reTime: parseInt($('restTime').value), 
-    weight: weight,
-    duration: dur
-  };
-  $('timerDisplay').textContent = 'GRATULACJE!!! 🥳'; $('timerDisplay').className = 'done';
-  $('doneMsg').textContent = `${totalReps} reps · ${session.weight}kg · ${session.exTime}s/ ${session.reTime}s · ${dur}s`;
-  $('doneMsg').className = 'show';
-  sessionLog.unshift(session); localStorage.setItem('hb_log', JSON.stringify(sessionLog.slice(0, 100)));
+  const w = parseFloat($('weightValue').value);
+  const s = { date: now.toLocaleDateString('pl-PL'), time: now.toLocaleTimeString('pl-PL', {hour:'2-digit', minute:'2-digit'}), reps: totalReps, weight: w, exTime: parseInt($('exerciseTime').value), reTime: parseInt($('restTime').value), duration: dur };
+  sessionLog.unshift(s); localStorage.setItem('hb_log', JSON.stringify(sessionLog.slice(0, 50)));
   renderLog();
-  if (accessToken && userSpreadsheetId) appendToSheets(session);
+  
+  $('timerDisplay').textContent = 'GRATULACJE!!! 🥳';
+  $('timerDisplay').className = 'done';
+  $('doneMsg').textContent = `Sesja zakończona: ${totalReps} powtórzeń z obciążeniem ${w}kg.`;
+  $('doneMsg').style.display = 'block';
+  
+  clearInterval(timerInterval); isRunning = false; isPaused = false;
+  $('startBtn').textContent = 'Start';
+  if (accessToken && userSpreadsheetId) appendToSheets(s);
 }
 
-function renderLog() {
-  const list = $('logList');
-  if (!sessionLog.length) { list.innerHTML = '<li class="log-empty">brak sesji</li>'; return; }
-  list.innerHTML = sessionLog.slice(0, 15).map(s => `
-    <li class="log-item">
-      <span class="log-dt">${s.date} ${s.time}</span>
-      <span class="log-weight">${s.weight}kg</span>
-      <span>${s.reps} reps</span>
-      <span class="log-detail">${s.exTime}s / ${s.reTime}s</span>
-    </li>`).join('');
-}
-
-// ═══════════════════════════════════════════════════
-// GOOGLE INTEGRATION
-// ═══════════════════════════════════════════════════
-function handleGoogleAuth() {
-  if (accessToken) { accessToken = null; location.reload(); return; }
-  const client = google.accounts.oauth2.initTokenClient({
-    client_id: CONFIG.GOOGLE_CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
-    callback: async (resp) => {
-      if (resp.error) return;
-      accessToken = resp.access_token;
-      const info = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + accessToken } }).then(r => r.json());
-      $('googleBtnText').textContent = info.name || info.email;
-      if (!userSpreadsheetId) await createSheetForUser();
-      else { $('syncStatus').textContent = '● połączono z arkuszem'; $('syncStatus').className = 'ok'; await ensureSheetHeaders(); }
-    },
-  });
-  client.requestAccessToken();
-}
+function resetTimer() { clearInterval(timerInterval); isRunning = false; isPaused = false; $('startBtn').textContent = 'Start'; $('timerDisplay').textContent = '—'; $('progressBar').style.width = '0%'; $('doneMsg').style.display = 'none'; }
+function setPhase(cls, lbl) { $('phaseLabel').textContent = lbl; $('phaseLabel').className = cls; $('repDisplay').textContent = `${currentRep}/${totalReps}`; updateDisplay(); }
+function updateDisplay() { $('timerDisplay').textContent = currentTime; $('timerDisplay').className = currentPhase; $('progressBar').className = currentPhase; $('progressBar').style.width = ((phaseDuration-currentTime)/phaseDuration*100)+'%'; }
+function renderLog() { $('logList').innerHTML = sessionLog.map(s => `<li class="log-item"><span class="log-dt">${s.date} ${s.time}</span><span style="font-weight:600">${s.weight}kg</span><span>${s.reps} powt.</span></li>`).join(''); }
+function toast(m) { const t=$('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000); }
 
 async function createSheetForUser() {
-  $('syncStatus').textContent = 'Tworzenie arkusza...';
   const r = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+    method: 'POST', headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
     body: JSON.stringify({ properties: { title: 'Mój Trening Hangboard' }, sheets: [{ properties: { title: CONFIG.SHEET_NAME } }] })
   });
-  const data = await r.json();
-  userSpreadsheetId = data.spreadsheetId;
-  localStorage.setItem('hb_spreadsheet_id', userSpreadsheetId);
-  await ensureSheetHeaders();
+  const data = await r.json(); userSpreadsheetId = data.spreadsheetId;
+  localStorage.setItem('hb_spreadsheet_id', userSpreadsheetId); await ensureSheetHeaders();
   $('syncStatus').textContent = '● arkusz gotowy'; $('syncStatus').className = 'ok';
 }
 
 async function ensureSheetHeaders() {
   const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A1:G1`, { headers: { Authorization: 'Bearer ' + accessToken } });
   const d = await r.json();
-  if (!d.values?.length) {
+  if (!d.values) {
     await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A1?valueInputOption=USER_ENTERED`, {
-      method: 'PUT',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [['Data','Godzina','Obciążenie (kg)','Powtórzenia','Ćwiczenie (s)','Odpoczynek (s)','Czas sesji (s)']] })
+      method: 'PUT', headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: [['Data','Godzina','Waga','Reps','Ex','Rest','Total']] })
     });
   }
 }
 
 async function appendToSheets(s) {
   try {
-    const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A:G:append?valueInputOption=USER_ENTERED`, {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A:G:append?valueInputOption=USER_ENTERED`, {
+      method: 'POST', headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
       body: JSON.stringify({ values: [[s.date, s.time, s.weight, s.reps, s.exTime, s.reTime, s.duration]] })
     });
-    if (r.ok) { $('syncStatus').textContent = '● zapisano do Sheets'; toast('Zapisano w Google Sheets'); }
-  } catch(e) { $('syncStatus').textContent = 'błąd synchronizacji'; }
+    toast('Zapisano w Google Sheets!');
+  } catch(e) { console.error(e); }
 }
 
-renderLog();
+window.onload = () => { renderLog(); checkAutoLogin(); };
 </script>
 </body>
 </html>
