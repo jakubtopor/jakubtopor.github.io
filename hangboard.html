@@ -391,7 +391,7 @@ function finishSession() {
     weight: weight,
     duration: dur
   };
-  $('timerDisplay').textContent = 'GRATULACJE!!! 🥳<'; $('timerDisplay').className = 'done';
+  $('timerDisplay').textContent = 'GRATULACJE!!! 🥳'; $('timerDisplay').className = 'done';
   $('doneMsg').textContent = `${totalReps} reps · ${session.weight}kg · ${session.exTime}s/ ${session.reTime}s · ${dur}s`;
   $('doneMsg').className = 'show';
   sessionLog.unshift(session); localStorage.setItem('hb_log', JSON.stringify(sessionLog.slice(0, 100)));
