@@ -112,6 +112,17 @@
 
         .posts a:hover { border-bottom: 1px solid #222; }
 
+        .app-badge {
+            font-size: 10px;
+            background: #222;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
         footer {
             margin-top: 60px;
             font-size: 13px;
@@ -144,8 +155,13 @@
         <div id="hero-slider" class="slider-container"></div>
 
         <main>
-            <h2>Posty</h2>
+            <h2>Projekty i Posty</h2>
             <ul class="posts">
+                <li class="post-item">
+                    <span class="date">Aplikacja</span>
+                    <a href="hangboard.html">Hangboard Timer <span class="app-badge">Tool</span></a>
+                </li>
+                
                 <li class="post-item">
                     <span class="date">2026-03-20</span>
                     <a href="posts/2026_03_20_bukowa_gora/2026_03_20_bukowa_gora.html" 
@@ -166,8 +182,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Pobieramy linki z listy postów
-            const postItems = Array.from(document.querySelectorAll('.post-item a'));
+            // Pobieramy linki z listy postów (tylko te, które mają zdjęcie do slidera)
+            const postItems = Array.from(document.querySelectorAll('.post-item a[data-img]'));
             const slider = document.getElementById('hero-slider');
 
             // Wybieramy losowe 3 posty
