@@ -22,43 +22,12 @@
 
   /* ── Header ── */
   header { margin-bottom: 40px; }
-
-  .header-profile {
-    display: flex;
-    align-items: center;
-  }
-
-  .avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-  }
-
-  .header-text h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  .header-text .subtitle {
-    font-size: 13px;
-    color: #999;
-    margin: 0;
-  }
-
-  nav {
-    margin-top: 4px;
-    font-size: 13px;
-  }
-
-  nav a {
-    color: #666;
-    text-decoration: none;
-    border-bottom: 1px solid #eee;
-  }
-
+  .header-profile { display: flex; align-items: center; }
+  .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px; }
+  .header-text h1 { margin: 0; font-size: 20px; font-weight: 700; }
+  .header-text .subtitle { font-size: 13px; color: #999; margin: 0; }
+  nav { margin-top: 4px; font-size: 13px; }
+  nav a { color: #666; text-decoration: none; border-bottom: 1px solid #eee; }
   nav a:hover { border-bottom-color: #222; color: #222; }
 
   h2 {
@@ -73,7 +42,7 @@
   /* ── Config grid ── */
   .config {
     display: flex;
-    gap: 32px;
+    gap: 24px;
     margin-bottom: 32px;
     flex-wrap: wrap;
   }
@@ -121,7 +90,7 @@
     color: #222;
     border: none;
     outline: none;
-    width: 40px;
+    width: 45px;
     text-align: center;
     -moz-appearance: textfield;
   }
@@ -145,22 +114,12 @@
     width: 100%;
   }
 
-  #phaseLabel {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #999;
-  }
-
+  #phaseLabel { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #999; }
   #phaseLabel.exercise { color: #c00; }
   #phaseLabel.rest     { color: #2a7a2a; }
   #phaseLabel.done     { color: #555; }
 
-  #repDisplay {
-    font-family: monospace;
-    font-size: 12px;
-    color: #bbb;
-  }
+  #repDisplay { font-family: monospace; font-size: 12px; color: #bbb; }
 
   #timerDisplay {
     font-family: monospace;
@@ -206,6 +165,7 @@
   .log-item { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; font-size: 14px; }
   .log-dt { font-family: monospace; font-size: 13px; color: #999; min-width: 120px; }
   .log-detail { color: #bbb; font-size: 12px; }
+  .log-weight { font-weight: 600; color: #444; }
 
   /* ── Footer & Misc ── */
   footer { margin-top: 60px; font-size: 13px; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
@@ -218,7 +178,7 @@
   }
   #toast.show { transform: translateX(-50%) translateY(0); }
 
-  @media (max-width: 480px) { #timerDisplay { font-size: 64px; } }
+  @media (max-width: 480px) { #timerDisplay { font-size: 64px; } .config { gap: 15px; } }
 </style>
 </head>
 <body>
@@ -262,12 +222,20 @@
           <button onclick="adj('reps',1)">+</button>
         </div>
       </div>
+      <div class="field">
+        <label>Obciążenie (kg)</label>
+        <div class="input-row">
+          <button onclick="adj('weight',-1)">−</button>
+          <input id="weightValue" type="number" value="0">
+          <button onclick="adj('weight',1)">+</button>
+        </div>
+      </div>
     </div>
   </section>
 
   <div class="timer-section">
     <div class="phase-row">
-      <span id="phaseLabel">gotowy</span>
+      <span id="phaseLabel">gratulacje!!! 🥳</span>
       <span id="repDisplay"></span>
     </div>
     <div id="timerDisplay">—</div>
@@ -321,11 +289,10 @@ let sessionLog = JSON.parse(localStorage.getItem('hb_log') || '[]');
 
 const $ = id => document.getElementById(id);
 
-// ── Helpers ──
 function adj(field, delta) {
-  const map = { exercise: 'exerciseTime', rest: 'restTime', reps: 'repsCount' };
+  const map = { exercise: 'exerciseTime', rest: 'restTime', reps: 'repsCount', weight: 'weightValue' };
   const el = $(map[field]);
-  el.value = Math.max(1, parseInt(el.value) + delta);
+  el.value = (field === 'weight') ? Math.max(0, parseFloat(el.value) + delta) : Math.max(1, parseInt(el.value) + delta);
 }
 
 function toast(msg) {
@@ -333,9 +300,9 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ── Audio ──
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function beep(freq = 880, duration = 0.1, volume = 0.3, type = 'sine') {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
   osc.connect(gain); gain.connect(audioCtx.destination);
   osc.type = type; osc.frequency.value = freq;
@@ -344,7 +311,6 @@ function beep(freq = 880, duration = 0.1, volume = 0.3, type = 'sine') {
   osc.start(); osc.stop(audioCtx.currentTime + duration);
 }
 
-// ── Timer Logic ──
 function toggleStart() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   if (!isRunning && !isPaused) startSession();
@@ -382,8 +348,16 @@ function startRest() {
 }
 
 function pauseTimer() { clearInterval(timerInterval); isRunning = false; isPaused = true; $('startBtn').textContent = 'Wznów'; }
-function resumeTimer() { isRunning = true; isPaused = false; $('startBtn').textContent = 'Pauza'; 
-  timerInterval = setInterval(currentPhase === 'exercise' ? () => { currentTime--; updateDisplay(); if(currentTime<=0){clearInterval(timerInterval); startRest();}} : () => {currentTime--; updateDisplay(); if(currentTime<=0){clearInterval(timerInterval); startExercise();}}, 1000);
+function resumeTimer() { 
+  isRunning = true; isPaused = false; $('startBtn').textContent = 'Pauza'; 
+  timerInterval = setInterval(() => {
+    currentTime--; updateDisplay();
+    if (currentTime <= 0) {
+      clearInterval(timerInterval);
+      if (currentPhase === 'exercise') { beep(440, 0.2, 0.4, 'square'); startRest(); }
+      else startExercise();
+    }
+  }, 1000);
 }
 
 function resetTimer() {
@@ -407,13 +381,18 @@ function updateDisplay() {
 function finishSession() {
   clearInterval(timerInterval); isRunning = false;
   const now = new Date(); const dur = Math.round((now - sessionStart) / 1000);
+  const weight = parseFloat($('weightValue').value);
   const session = {
     date: now.toLocaleDateString('pl-PL'),
     time: now.toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' }),
-    reps: totalReps, exTime: parseInt($('exerciseTime').value), reTime: parseInt($('restTime').value), duration: dur
+    reps: totalReps, 
+    exTime: parseInt($('exerciseTime').value), 
+    reTime: parseInt($('restTime').value), 
+    weight: weight,
+    duration: dur
   };
   $('timerDisplay').textContent = 'gotowe'; $('timerDisplay').className = 'done';
-  $('doneMsg').textContent = `${totalReps} reps · ${session.exTime}s/ ${session.reTime}s · ${dur}s`;
+  $('doneMsg').textContent = `${totalReps} reps · ${session.weight}kg · ${session.exTime}s/ ${session.reTime}s · ${dur}s`;
   $('doneMsg').className = 'show';
   sessionLog.unshift(session); localStorage.setItem('hb_log', JSON.stringify(sessionLog.slice(0, 100)));
   renderLog();
@@ -423,7 +402,13 @@ function finishSession() {
 function renderLog() {
   const list = $('logList');
   if (!sessionLog.length) { list.innerHTML = '<li class="log-empty">brak sesji</li>'; return; }
-  list.innerHTML = sessionLog.slice(0, 10).map(s => `<li class="log-item"><span class="log-dt">${s.date} ${s.time}</span><span>${s.reps} reps</span><span class="log-detail">${s.exTime}s / ${s.reTime}s</span></li>`).join('');
+  list.innerHTML = sessionLog.slice(0, 15).map(s => `
+    <li class="log-item">
+      <span class="log-dt">${s.date} ${s.time}</span>
+      <span class="log-weight">${s.weight}kg</span>
+      <span>${s.reps} reps</span>
+      <span class="log-detail">${s.exTime}s / ${s.reTime}s</span>
+    </li>`).join('');
 }
 
 // ═══════════════════════════════════════════════════
@@ -458,27 +443,26 @@ async function createSheetForUser() {
   localStorage.setItem('hb_spreadsheet_id', userSpreadsheetId);
   await ensureSheetHeaders();
   $('syncStatus').textContent = '● arkusz gotowy'; $('syncStatus').className = 'ok';
-  toast('Utworzono arkusz na Twoim koncie Google!');
 }
 
 async function ensureSheetHeaders() {
-  const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A1:F1`, { headers: { Authorization: 'Bearer ' + accessToken } });
+  const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A1:G1`, { headers: { Authorization: 'Bearer ' + accessToken } });
   const d = await r.json();
   if (!d.values?.length) {
     await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A1?valueInputOption=USER_ENTERED`, {
       method: 'PUT',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [['Data','Godzina','Powtórzenia','Ćwiczenie (s)','Odpoczynek (s)','Czas sesji (s)']] })
+      body: JSON.stringify({ values: [['Data','Godzina','Obciążenie (kg)','Powtórzenia','Ćwiczenie (s)','Odpoczynek (s)','Czas sesji (s)']] })
     });
   }
 }
 
 async function appendToSheets(s) {
   try {
-    const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A:F:append?valueInputOption=USER_ENTERED`, {
+    const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${userSpreadsheetId}/values/${CONFIG.SHEET_NAME}!A:G:append?valueInputOption=USER_ENTERED`, {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [[s.date, s.time, s.reps, s.exTime, s.reTime, s.duration]] })
+      body: JSON.stringify({ values: [[s.date, s.time, s.weight, s.reps, s.exTime, s.reTime, s.duration]] })
     });
     if (r.ok) { $('syncStatus').textContent = '● zapisano do Sheets'; toast('Zapisano w Google Sheets'); }
   } catch(e) { $('syncStatus').textContent = 'błąd synchronizacji'; }
