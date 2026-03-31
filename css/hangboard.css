@@ -1,0 +1,289 @@
+/* =============================================================================
+   hangboard.css
+   Style specyficzne dla aplikacji Hangboard Timer (hangboard.html).
+   Dołączany po main.css — może rozszerzać lub nadpisywać style globalne.
+
+   Sekcje:
+    1. Layout aplikacji
+    2. Panel ustawień (kontrolki +/−)
+    3. Sekcja timera
+    4. Pasek postępu
+    5. Przyciski sterowania
+    6. Historia sesji i synchronizacja
+    7. Toast (powiadomienie)
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. LAYOUT APLIKACJI
+   ============================================================================= */
+
+/*
+ * Dodatkowy padding na dole zapobiega zasłonięciu ostatnich elementów
+ * przez systemowy pasek nawigacji na urządzeniach mobilnych (iOS/Android).
+ */
+.container {
+  padding-bottom: 80px;
+}
+
+
+/* =============================================================================
+   2. PANEL USTAWIEŃ — KONTROLKI +/−
+   ============================================================================= */
+
+/* Wiersz z polami konfiguracyjnymi — zawija się na wąskich ekranach. */
+.config {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+/* Pojedyncze pole: etykieta + kontrolka. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 12px;
+  color: #999;
+}
+
+/* Wrapper przycisku −, inputa i przycisku +. */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Przyciski +/− — minimalistyczne, bez wypełnienia. */
+.input-row button {
+  background: none;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  color: #999;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+}
+
+/* Input wartości — tylko do odczytu wizualnego, zmiana przez przyciski. */
+.input-row input {
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  border: none;
+  width: 45px;
+  text-align: center;
+}
+
+
+/* =============================================================================
+   3. SEKCJA TIMERA
+   ============================================================================= */
+
+/* Główny blok timera oddzielony poziomymi liniami od reszty UI. */
+.timer-section {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  padding: 32px 0;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Wiersz z etykietą fazy i licznikiem serii (po prawej). */
+.phase-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Etykieta fazy — domyślnie szara, zmienia kolor klasami .exercise / .rest. */
+#phaseLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+}
+
+#phaseLabel.exercise { color: #c00;     } /* czerwony — trwają zwisy */
+#phaseLabel.rest     { color: #2a7a2a;  } /* zielony  — trwa odpoczynek */
+
+/* Licznik serii "X/Y" w prawym górnym rogu sekcji. */
+#repDisplay {
+  font-family: monospace;
+  font-size: 12px;
+  color: #bbb;
+}
+
+/*
+ * Główny wyświetlacz czasu — duży i czytelny z odległości (np. timer leżący na podłodze).
+ * Domyślny kolor #eee (szary) gdy timer jest w spoczynku.
+ */
+#timerDisplay {
+  font-family: monospace;
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
+  color: #eee;
+  letter-spacing: -4px; /* zacieśnienie cyfr monospacowych wygląda lepiej */
+  margin: 4px 0;
+}
+
+#timerDisplay.exercise { color: #c00;    }
+#timerDisplay.rest     { color: #2a7a2a; }
+
+/* Stan po zakończeniu sesji — mniejszy tekst, ciemny kolor. */
+#timerDisplay.done {
+  color: #222;
+  font-size: 38px;
+  letter-spacing: 0;
+}
+
+
+/* =============================================================================
+   4. PASEK POSTĘPU
+   ============================================================================= */
+
+/* Cienka linia pod timerem pokazuje postęp bieżącej fazy. */
+.progress-track {
+  width: 100%;
+  height: 2px;
+  background: #f0f0f0;
+}
+
+/* Wypełnienie paska — szerokość ustawiana przez JS (0% → 100%). */
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background: #eee;
+  transition: background 0.35s; /* płynna zmiana koloru przy zmianie fazy */
+}
+
+#progressBar.exercise { background: #c00;    }
+#progressBar.rest     { background: #2a7a2a; }
+
+
+/* =============================================================================
+   5. PRZYCISKI STEROWANIA
+   ============================================================================= */
+
+/* Wiersz z przyciskami Start/Pauza, Reset i Google. */
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+  align-items: center;
+}
+
+/* Główny przycisk akcji — ciemny, wypełniony. */
+#startBtn {
+  background: #222;
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  padding: 9px 22px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Przycisk Reset — drugorzędny, bez wypełnienia. */
+#resetBtn {
+  background: none;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  color: #999;
+  padding: 9px 18px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/*
+ * Przycisk Google — przesunięty do prawej krawędzi (margin-left: auto).
+ * Wyświetla imię użytkownika po zalogowaniu.
+ */
+#googleBtn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  color: #666;
+  font-size: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+
+/* =============================================================================
+   6. HISTORIA SESJI I SYNCHRONIZACJA
+   ============================================================================= */
+
+/* Status synchronizacji z Google Sheets — szary gdy niezalogowany, zielony gdy ok. */
+#syncStatus {
+  font-size: 12px;
+  color: #bbb;
+}
+
+#syncStatus.ok {
+  color: #2a7a2a;
+}
+
+/* Lista wpisów z historii sesji. */
+.log-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Pojedynczy wpis: data + godzina, obciążenie, liczba powtórzeń. */
+.log-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+/* Data i godzina w stałej szerokości — zachowuje wizualne wyrównanie kolumn. */
+.log-dt {
+  font-family: monospace;
+  font-size: 13px;
+  color: #999;
+  min-width: 120px;
+}
+
+
+/* =============================================================================
+   7. TOAST — POWIADOMIENIE
+   ============================================================================= */
+
+/*
+ * Toast domyślnie schowany poniżej widocznego obszaru (translateY(60px)).
+ * Klasa .show przesuwa go w górę — animacja przez transition.
+ */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(60px); /* wyśrodkowany poziomo, ukryty w dole */
+  background: #222;
+  color: #fff;
+  border-radius: 3px;
+  padding: 8px 16px;
+  font-size: 12px;
+  transition: transform 0.25s;
+  z-index: 999; /* nad wszystkimi elementami strony */
+}
+
+#toast.show {
+  transform: translateX(-50%) translateY(0); /* wsunięcie na ekran */
+}

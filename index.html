@@ -4,141 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jakub Topór</title>
-    <style>
-        /* Styl minimalizmu Haxley */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #222;
-            background: #fff;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        header { margin-bottom: 20px; }
-
-        .header-profile {
-            display: flex;
-            align-items: center;
-        }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-        }
-
-        .header-text h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        /* KARUZELA */
-        .slider-container {
-            width: 100%;
-            height: 350px;
-            margin: 30px 0 50px 0;
-            position: relative;
-            overflow: hidden;
-            border-radius: 4px;
-            background: #f0f0f0;
-        }
-
-        .slide {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            display: block;
-        }
-
-        .slide.active { opacity: 1; }
-
-        .slide img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
-
-        .slide-title {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 40px 20px 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.7));
-        }
-
-        /* LISTA POSTÓW */
-        h2 {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            color: #999;
-        }
-
-        .posts { list-style: none; padding: 0; margin: 0; }
-
-        .posts li {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .date {
-            font-family: monospace;
-            font-size: 14px;
-            color: #999;
-            margin-right: 15px;
-            min-width: 85px;
-        }
-
-        .posts a {
-            color: #222;
-            text-decoration: none;
-            border-bottom: 1px solid #eee;
-        }
-
-        .posts a:hover { border-bottom: 1px solid #222; }
-
-        .app-badge {
-            font-size: 10px;
-            background: #222;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-
-        footer {
-            margin-top: 60px;
-            font-size: 13px;
-            color: #999;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-
-        footer a { color: #666; text-decoration: none; }
-
-        @media (max-width: 480px) {
-            .slider-container { height: 250px; }
-            .date { display: block; margin-bottom: 2px; }
-            .posts li { display: block; margin-bottom: 15px; }
-        }
-    </style>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
 
@@ -152,6 +18,7 @@
             </div>
         </header>
 
+        <!-- Slider hero — wypełniany dynamicznie przez JS na podstawie listy postów poniżej. -->
         <div id="hero-slider" class="slider-container"></div>
 
         <main>
@@ -161,10 +28,14 @@
                     <span class="date">Aplikacja</span>
                     <a href="hangboard.html">Hangboard Timer <span class="app-badge">Tool</span></a>
                 </li>
-                
+
+                <!--
+                    data-img — ścieżka do zdjęcia okładkowego dla slidera hero.
+                    Posty bez atrybutu data-img nie trafią do slidera.
+                -->
                 <li class="post-item">
                     <span class="date">2026-03-20</span>
-                    <a href="posts/2026_03_20_bukowa_gora/2026_03_20_bukowa_gora.html" 
+                    <a href="posts/2026_03_20_bukowa_gora/2026_03_20_bukowa_gora.html"
                        data-img="posts/2026_03_20_bukowa_gora/bukowa_gora_1.jpeg">[bouldering] Bukowa Góra</a>
                 </li>
             </ul>
@@ -177,41 +48,47 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Pobieramy linki z listy postów (tylko te, które mają zdjęcie do slidera)
+
+            // Zbieramy tylko te posty, które mają atrybut data-img (zdjęcie okładkowe).
             const postItems = Array.from(document.querySelectorAll('.post-item a[data-img]'));
-            const slider = document.getElementById('hero-slider');
+            const slider    = document.getElementById('hero-slider');
 
-            // Wybieramy losowe 3 posty
-            const shuffled = postItems.sort(() => 0.5 - Math.random());
-            const selected = shuffled.slice(0, 3);
+            // Tasujemy tablicę i bierzemy maksymalnie 3 posty do slidera.
+            const selected = postItems
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3);
 
+            // Budujemy slajdy i wstawiamy je do kontenera.
             selected.forEach((post, index) => {
-                const link = post.getAttribute('href');
+                const link  = post.getAttribute('href');
                 const title = post.innerText;
-                const img = post.getAttribute('data-img');
+                const img   = post.getAttribute('data-img');
 
-                if (img) {
-                    const slide = document.createElement('a');
-                    slide.href = link;
-                    slide.className = index === 0 ? 'slide active' : 'slide';
-                    slide.innerHTML = `
-                        <img src="${img}" alt="${title}">
-                        <div class="slide-title">${title}</div>
-                    `;
-                    slider.appendChild(slide);
-                }
+                if (!img) return;
+
+                const slide = document.createElement('a');
+                slide.href      = link;
+                // Pierwszy slajd od razu widoczny — pozostałe czekają na rotację.
+                slide.className = index === 0 ? 'slide active' : 'slide';
+                slide.innerHTML = `
+                    <img src="${img}" alt="${title}">
+                    <div class="slide-title">${title}</div>
+                `;
+                slider.appendChild(slide);
             });
 
-            // Logika przesuwania slajdów
-            let current = 0;
+            // Uruchamiamy automatyczną rotację tylko jeśli jest więcej niż 1 slajd.
             const slides = document.querySelectorAll('.slide');
+
             if (slides.length > 1) {
+                let current = 0;
                 setInterval(() => {
                     slides[current].classList.remove('active');
-                    current = (current + 1) % slides.length;
+                    current = (current + 1) % slides.length; // zapętlamy na końcu
                     slides[current].classList.add('active');
-                }, 5000);
+                }, 5000); // zmiana co 5 sekund
             } else if (slides.length === 0) {
+                // Brak postów ze zdjęciami — ukrywamy pusty kontener slidera.
                 slider.style.display = 'none';
             }
         });

@@ -1,0 +1,340 @@
+/* =============================================================================
+   main.css
+   Wspólne style dla całej strony jakubtopor.github.io.
+
+   Używany przez: index.html, hangboard.html, privacy.html,
+                  posts//NAZWA_POSTA.html
+
+   Sekcje:
+    1. Reset & Base
+    2. Layout
+    3. Header & Nawigacja
+    4. Footer
+    5. Strona główna — slider hero
+    6. Strona główna — lista postów
+    7. Strony postów — artykuł
+    8. Responsive (≤ 480px)
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. RESET & BASE
+   ============================================================================= */
+
+body {
+  /*
+   * System font stack — używa czcionki natywnej dla danego systemu,
+   * bez ładowania zewnętrznych zasobów (zero opóźnienia, spójny wygląd).
+   *
+   *  -apple-system       → San Francisco na macOS/iOS (Safari)
+   *  BlinkMacSystemFont  → San Francisco na macOS (Chrome/Blink)
+   *  "Segoe UI"          → Windows 10/11
+   *  Roboto              → Android i ChromeOS
+   *  Helvetica           → starszy macOS (fallback przed Arial)
+   *  Arial               → uniwersalny fallback Windows/Linux
+   *  sans-serif          → ostateczny fallback — domyślna bezszeryfowa przeglądarki
+   */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #222;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =============================================================================
+   2. LAYOUT
+   ============================================================================= */
+
+/* Centralny kontener treści — ogranicza szerokość i dodaje marginesy boczne. */
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+
+/* =============================================================================
+   3. HEADER & NAWIGACJA
+   ============================================================================= */
+
+header {
+  margin-bottom: 40px;
+}
+
+/*
+ * Wrapper z avatarem i tekstem — używamy go jako <a> na podstronach,
+ * żeby cały blok był klikalnym linkiem powrotnym do strony głównej.
+ */
+.header-profile {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* usuwa podkreślenie gdy jest <a> */
+  color: inherit;        /* dziedziczy kolor tekstu zamiast domyślnego niebieskiego */
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;  /* okrągłe zdjęcie */
+  object-fit: cover;   /* kadruje bez rozciągania */
+  margin-right: 15px;
+  border: none;
+}
+
+.header-text h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Opcjonalny podtytuł pod imieniem, używany np. w hangboard.html. */
+.header-text .subtitle {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+}
+
+/* Pasek nawigacji z linkami powrotnymi (← powrót). */
+nav {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+nav a {
+  color: #666;
+  text-decoration: none;
+  /* Subtelne podkreślenie jako element UI zamiast domyślnego stylu przeglądarki. */
+  border-bottom: 1px solid #eee;
+}
+
+nav a:hover {
+  border-bottom-color: #222;
+  color: #222;
+}
+
+/*
+ * Globalne h2 — styl etykiet sekcji (małe litery, duże odstępy).
+ * Nadpisywane na stronach postów dla tytułu artykułu (article h2).
+ */
+h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  color: #999;
+  font-weight: 400;
+}
+
+
+/* =============================================================================
+   4. FOOTER
+   ============================================================================= */
+
+footer {
+  margin-top: 60px;
+  font-size: 13px;
+  color: #999;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+footer a {
+  color: #666;
+  text-decoration: none;
+}
+
+
+/* =============================================================================
+   5. STRONA GŁÓWNA — SLIDER HERO
+   ============================================================================= */
+
+/*
+ * Kontener slidera z overflow: hidden ukrywa slajdy, które wychodzą poza obszar.
+ * Pozycja relative jest bazą dla absolutnie pozycjonowanych slajdów.
+ */
+.slider-container {
+  width: 100%;
+  height: 350px;
+  margin: 30px 0 50px 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f0f0f0; /* kolor placeholder gdy zdjęcia się ładują */
+}
+
+/*
+ * Każdy slajd jest absolutnie nałożony na kontener.
+ * Domyślnie niewidoczny (opacity: 0) — widoczna jest tylko klasa .active.
+ */
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out; /* płynne przejście między slajdami */
+  display: block;
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+/* Zdjęcie wypełnia cały slajd bez deformacji. */
+.slide img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * Tytuł postaci na dole slajdu.
+ * Gradient od przezroczystego do czarnego zapewnia czytelność tekstu na zdjęciu.
+ */
+.slide-title {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 40px 20px 20px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+}
+
+
+/* =============================================================================
+   6. STRONA GŁÓWNA — LISTA POSTÓW
+   ============================================================================= */
+
+.posts {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.posts li {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: baseline; /* wyrównanie daty i tytułu do linii bazowej tekstu */
+}
+
+/* Monospacowa data wyrównana do stałej szerokości — zachowuje pionową oś tytułów. */
+.date {
+  font-family: monospace;
+  font-size: 14px;
+  color: #999;
+  margin-right: 15px;
+  min-width: 85px;
+}
+
+.posts a {
+  color: #222;
+  text-decoration: none;
+  border-bottom: 1px solid #eee;
+}
+
+.posts a:hover {
+  border-bottom: 1px solid #222;
+}
+
+/* Mała etykieta "Tool" / "App" wyróżniająca projekty na liście postów. */
+.app-badge {
+  font-size: 10px;
+  background: #222;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+
+/* =============================================================================
+   7. STRONY POSTÓW — ARTYKUŁ
+   ============================================================================= */
+
+/* Link powrotny nad artykułem. */
+.back-link {
+  display: inline-block;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #999;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #222;
+}
+
+/*
+ * Tytuł artykułu — nadpisuje globalne h2 (etykiety sekcji).
+ * Duże, pogrubione, bez efektów typograficznych globalnego h2.
+ */
+article h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #222;
+  font-weight: 700;
+}
+
+/* Data i lokalizacja pod tytułem artykułu. */
+.post-meta {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 30px;
+  font-family: monospace;
+}
+
+/* Treść artykułu — nieco większa czcionka dla lepszej czytelności długich tekstów. */
+.post-content {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Zdjęcia w treści artykułu — responsywne z lekkim zaokrągleniem. */
+.post-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 30px 0 10px 0;
+  display: block;
+  border-radius: 4px;
+}
+
+.post-content p {
+  margin-bottom: 20px;
+}
+
+/* Podpis pod zdjęciem. */
+.img-caption {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 30px;
+  font-style: italic;
+}
+
+
+/* =============================================================================
+   8. RESPONSIVE — małe ekrany (≤ 480px)
+   ============================================================================= */
+
+@media (max-width: 480px) {
+  /* Niższy slider na telefonach — nie zajmuje pół ekranu. */
+  .slider-container {
+    height: 250px;
+  }
+
+  /* Na wąskim ekranie data przechodzi do własnej linii nad tytułem. */
+  .date {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .posts li {
+    display: block;
+    margin-bottom: 15px;
+  }
+}
